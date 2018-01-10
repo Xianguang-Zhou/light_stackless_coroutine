@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 typedef struct LscCoroutine LscCoroutine;
-struct LscCoroutine{
+struct LscCoroutine {
 	void *pc;
 	void *bp;
 	void *sp;
@@ -14,22 +14,41 @@ extern LscCoroutine *lsc_start_context(LscCoroutine *that,
 extern LscCoroutine *lsc_swap_context(LscCoroutine *that,
 		LscCoroutine *this);
 
-void co2_func(LscCoroutine *co2){
-	puts("co2 begin");
-	co2=lsc_swap_context(co2->link, co2);
-	puts("co2 end");
-	co2=lsc_swap_context(co2->link, co2);
+void co2_func(LscCoroutine *co2) {
+	char space[73];
+	int lv = 5;
+	printf("co2 begin, lv = %d\n", lv);
+	co2 = lsc_swap_context(co2->link, co2);
+	lv += 5;
+	printf("co2 end, lv = %d\n", lv);
+	co2 = lsc_swap_context(co2->link, co2);
 }
 
-int main(){
-	LscCoroutine *co1=calloc(1,sizeof(LscCoroutine));
-	LscCoroutine *co2=calloc(1,sizeof(LscCoroutine));
-	co2->pc=co2_func;
-	co2->link=co1;
+void co3_func(LscCoroutine *co3) {
+	char space[73];
+	int lv;
+	printf("co3 begin, lv = %d\n", lv);
+	co3 = lsc_swap_context(co3->link, co3);
+	printf("co3 end, lv = %d\n", lv);
+	co3 = lsc_swap_context(co3->link, co3);
+}
+
+int main() {
+	LscCoroutine *co1 = calloc(1, sizeof(LscCoroutine));
+	LscCoroutine *co2 = calloc(1, sizeof(LscCoroutine));
+	co2->pc = co2_func;
+	co2->link = co1;
+	LscCoroutine *co3 = calloc(1, sizeof(LscCoroutine));
+	co3->pc = co3_func;
+	co3->link = co1;
 	puts("co1 start co2");
-	co1=lsc_start_context(co2,co1);
+	co1 = lsc_start_context(co2, co1);
+	puts("co1 start co3");
+	co1 = lsc_start_context(co3, co1);
 	puts("co1 resume co2");
-	co1=lsc_swap_context(co2,co1);
+	co1 = lsc_swap_context(co2, co1);
+	puts("co1 resume co3");
+	co1 = lsc_swap_context(co3, co1);
 	puts("co1 end");
 	return 0;
 }
