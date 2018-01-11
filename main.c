@@ -22,8 +22,14 @@ extern LscCoroutine *lsc_start_context(LscCoroutine *that,
 extern LscCoroutine *lsc_swap_context(LscCoroutine *that,
 		LscCoroutine *this);
 
+#if defined(__x86_64__)
+#define SPACE_SIZE 73
+#elif defined(__i386__)
+#define SPACE_SIZE 193
+#endif
+
 void co2_func(LscCoroutine *co2) {
-	char space[73];
+	char space[SPACE_SIZE];
 	int lv = 5;
 	printf("co2 begin, lv = %d\n", lv);
 	co2 = lsc_swap_context(co2->link, co2);
@@ -33,7 +39,7 @@ void co2_func(LscCoroutine *co2) {
 }
 
 void co3_func(LscCoroutine *co3) {
-	char space[73];
+	char space[SPACE_SIZE];
 	int lv;
 	printf("co3 begin, lv = %d\n", lv);
 	co3 = lsc_swap_context(co3->link, co3);

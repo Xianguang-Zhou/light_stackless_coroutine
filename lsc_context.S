@@ -9,15 +9,27 @@
 	.globl	lsc_start_context
 	.type	lsc_start_context, @function
 lsc_start_context:
+#if defined(__x86_64__)
 	popq	(%rsi)
 	movq	%rbp, 8(%rsi)
 	movq	%rsp, 16(%rsi)
 	pushq	(%rdi)
 	ret
+#elif defined(__i386__)
+	movl	8(%esp), %eax
+	popl	(%eax)
+	movl	%ebp, 4(%eax)
+	movl	%esp, 8(%eax)
+	movl	(%esp), %eax
+	movl	%eax, 4(%esp)
+	pushl	(%eax)
+	ret
+#endif
 
 	.globl	lsc_swap_context
 	.type	lsc_swap_context, @function
 lsc_swap_context:
+#if defined(__x86_64__)
 	popq	(%rsi)
 	movq	%rbp, 8(%rsi)
 	movq	%rsp, 16(%rsi)
@@ -26,4 +38,14 @@ lsc_swap_context:
 	movq	%rdi, %rax
 	pushq	(%rdi)
 	ret
-
+#elif defined(__i386__)
+	movl	8(%esp), %eax
+	popl	(%eax)
+	movl	%ebp, 4(%eax)
+	movl	%esp, 8(%eax)
+	movl	(%esp), %eax
+	movl	4(%eax), %ebp
+	movl	8(%eax), %esp
+	pushl	(%eax)
+	ret
+#endif
