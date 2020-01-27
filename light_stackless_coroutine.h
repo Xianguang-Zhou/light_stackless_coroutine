@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019, Xianguang Zhou <xianguang.zhou@outlook.com>. All
+ * Copyright (c) 2018, 2020, Xianguang Zhou <xianguang.zhou@outlook.com>. All
  * rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -40,9 +40,9 @@ void lsc_open();
 void lsc_close();
 LscCoroutine *lsc_new(LscFunction func);
 void lsc_resume(LscCoroutine *coro);
-#define lsc_yield()                                                            \
+#define lsc_yield                                                              \
   lsc_current_coro = lsc_swap_context(lsc_current_coro->link, lsc_current_coro)
-#define lsc_end() lsc_yield()
+#define lsc_return lsc_swap_context(lsc_current_coro->link, lsc_current_coro)
 void lsc_free(LscCoroutine *coro);
 
 #ifdef __cplusplus
