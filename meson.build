@@ -17,7 +17,7 @@ project('light_stackless_coroutine', 'c')
 
 install_headers('light_stackless_coroutine.h')
 
-src_list = ['light_stackless_coroutine.c', 'lsc_context_gas.S']
+src_list = ['light_stackless_coroutine.c', 'lsc_context_x86.S', 'lsc_context_arm.S']
 
 library(meson.project_name(),
 	sources : src_list,
