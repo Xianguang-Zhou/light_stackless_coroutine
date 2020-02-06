@@ -26,10 +26,10 @@ typedef struct LscCoroutine LscCoroutine;
 typedef void (*LscFunction)();
 
 struct LscCoroutine {
-  void *pc;
-  void *bp;
-  void *sp;
-  LscCoroutine *link;
+	void *pc;
+	void *bp;
+	void *sp;
+	LscCoroutine *link;
 };
 
 extern LscCoroutine *lsc_swap_context(LscCoroutine *other, LscCoroutine *self);
@@ -41,7 +41,8 @@ void lsc_close();
 LscCoroutine *lsc_new(LscFunction func);
 void lsc_resume(LscCoroutine *coro);
 #define lsc_yield                                                              \
-  lsc_current_coro = lsc_swap_context(lsc_current_coro->link, lsc_current_coro)
+	lsc_current_coro =                                                         \
+		lsc_swap_context(lsc_current_coro->link, lsc_current_coro)
 #define lsc_return lsc_swap_context(lsc_current_coro->link, lsc_current_coro)
 void lsc_free(LscCoroutine *coro);
 

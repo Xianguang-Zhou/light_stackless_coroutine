@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2019, Xianguang Zhou <xianguang.zhou@outlook.com>. All
+ * Copyright (c) 2018, 2020, Xianguang Zhou <xianguang.zhou@outlook.com>. All
  * rights reserved.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23,33 +23,33 @@ extern LscCoroutine *lsc_start_context(LscCoroutine *other, LscCoroutine *self);
 __thread LscCoroutine *lsc_current_coro = NULL;
 
 void lsc_open() {
-  if (NULL == lsc_current_coro) {
-    lsc_current_coro = calloc(1, sizeof(LscCoroutine));
-  }
+	if (NULL == lsc_current_coro) {
+		lsc_current_coro = calloc(1, sizeof(LscCoroutine));
+	}
 }
 
 void lsc_close() {
-  if (NULL != lsc_current_coro) {
-    free(lsc_current_coro);
-    lsc_current_coro = NULL;
-  }
+	if (NULL != lsc_current_coro) {
+		free(lsc_current_coro);
+		lsc_current_coro = NULL;
+	}
 }
 
 LscCoroutine *lsc_new(LscFunction func) {
-  LscCoroutine *coro = calloc(1, sizeof(LscCoroutine));
-  coro->pc = func;
-  return coro;
+	LscCoroutine *coro = calloc(1, sizeof(LscCoroutine));
+	coro->pc = func;
+	return coro;
 }
 
 void lsc_resume(LscCoroutine *coro) {
-  if (NULL == coro->link) {
-    coro->link = lsc_current_coro;
-    LscCoroutine *self = lsc_current_coro;
-    lsc_current_coro = coro;
-    lsc_current_coro = lsc_start_context(coro, self);
-  } else {
-    lsc_current_coro = lsc_swap_context(coro, lsc_current_coro);
-  }
+	if (NULL == coro->link) {
+		coro->link = lsc_current_coro;
+		LscCoroutine *self = lsc_current_coro;
+		lsc_current_coro = coro;
+		lsc_current_coro = lsc_start_context(coro, self);
+	} else {
+		lsc_current_coro = lsc_swap_context(coro, lsc_current_coro);
+	}
 }
 
 void lsc_free(LscCoroutine *coro) { free(coro); }
