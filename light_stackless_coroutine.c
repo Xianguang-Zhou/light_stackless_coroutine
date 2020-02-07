@@ -37,9 +37,11 @@ void lsc_close() {
 
 LscCoroutine *lsc_new(LscFunction func) {
 	LscCoroutine *coro = calloc(1, sizeof(LscCoroutine));
-	coro->pc = func;
+	coro->_pc = func;
 	return coro;
 }
+
+void lsc_free(LscCoroutine *coro) { free(coro); }
 
 void lsc_resume(LscCoroutine *coro) {
 	if (NULL == coro->link) {
@@ -52,4 +54,16 @@ void lsc_resume(LscCoroutine *coro) {
 	}
 }
 
-void lsc_free(LscCoroutine *coro) { free(coro); }
+void lsc_data_set(void *data) {
+	if (NULL != lsc_current_coro) {
+		lsc_current_coro->data = data;
+	}
+}
+
+void *lsc_data() {
+	if (NULL != lsc_current_coro) {
+		return lsc_current_coro->data;
+	} else {
+		return NULL;
+	}
+}
