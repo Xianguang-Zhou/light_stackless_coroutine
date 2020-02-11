@@ -25,6 +25,7 @@ __thread LscCoroutine *lsc_current_coro = NULL;
 void lsc_open() {
 	if (NULL == lsc_current_coro) {
 		lsc_current_coro = calloc(1, sizeof(LscCoroutine));
+		lsc_current_coro->status = LSC_RUNNING;
 	}
 }
 
@@ -38,12 +39,15 @@ void lsc_close() {
 LscCoroutine *lsc_new(LscFunction func) {
 	LscCoroutine *coro = calloc(1, sizeof(LscCoroutine));
 	coro->_pc = func;
+	coro->status = LSC_NEW;
 	return coro;
 }
 
 void lsc_free(LscCoroutine *coro) { free(coro); }
 
 void lsc_resume(LscCoroutine *coro) {
+	lsc_current_coro->status = LSC_WAITING;
+	coro->status = LSC_RUNNING;
 	if (NULL == coro->link) {
 		coro->link = lsc_current_coro;
 		LscCoroutine *self = lsc_current_coro;
@@ -67,3 +71,5 @@ void *lsc_data() {
 		return NULL;
 	}
 }
+
+LscStatus lsc_status(LscCoroutine *coro) { return coro->status; }

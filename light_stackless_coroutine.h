@@ -25,11 +25,20 @@ extern "C" {
 typedef struct LscCoroutine LscCoroutine;
 typedef void (*LscFunction)();
 
+typedef enum {
+	LSC_NEW,
+	LSC_RUNNING,
+	LSC_SUSPENDED,
+	LSC_WAITING,
+	LSC_DEAD
+} LscStatus;
+
 struct LscCoroutine {
 	void *_pc;
 	void *_bp;
 	void *_sp;
 	LscCoroutine *link;
+	LscStatus status;
 	void *data;
 };
 
@@ -45,9 +54,16 @@ void lsc_free(LscCoroutine *coro);
 
 void lsc_resume(LscCoroutine *coro);
 #define lsc_yield                                                              \
+	lsc_current_coro->status = LSC_SUSPENDED;                                  \
+	lsc_current_coro->link->status = LSC_RUNNING;                              \
 	lsc_current_coro =                                                         \
 		lsc_swap_context(lsc_current_coro->link, lsc_current_coro)
-#define lsc_return lsc_swap_context(lsc_current_coro->link, lsc_current_coro)
+#define lsc_return                                                             \
+	lsc_current_coro->status = LSC_DEAD;                                       \
+	lsc_current_coro->link->status = LSC_RUNNING;                              \
+	lsc_swap_context(lsc_current_coro->link, lsc_current_coro)
+
+LscStatus lsc_status(LscCoroutine *coro);
 
 void lsc_data_set(void *data);
 void *lsc_data();
